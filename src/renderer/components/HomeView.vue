@@ -10,7 +10,7 @@
       <p v-if="isDownloadsReady && downloads.length == 0" style="margin: auto; width: fit-content;">No downloads yet</p>
       <table v-else id="my-downloads-table">
         <tr v-for="(dl, i) in downloads" :key="'dl-' + i">
-          <td>{{dl.filename}}</td>
+          <td>&nbsp;> {{dl.filename}}</td>
         </tr>
       </table>
     </section>
@@ -26,38 +26,51 @@
         </template>
       </div>
     </section>
-    <section id="video-preview"></section>
+    <transition name="fade">
+      <VideoPreview v-if="showVideoPreview" class="video-preview"/>
+    </transition>
   </div>
 </template>
 
 <script>
 import {URL} from 'url';
-// import cp from 'child_process';
 import {fail} from 'assert';
 import {ipcRenderer} from 'electron';
+import VideoPreview from '@/components/VideoPreview.vue';
 
 export default {
+  components: {
+    VideoPreview
+  },
   data: () => ({
     isDownloadsReady: true,
     isTopTrendingVideosReady: true,
     downloadURL: '',
     downloads: [
       // limit to 10
-      /*{filename: 'Better UI/UX design'},
+      {filename: 'Better UI/UX design'},
       {filename: 'How to speedcube(F2L)'},
       {filename: 'The Future: Blockchain, ML, Quantum Computing'},
       {filename: 'Better UI/UX design'},
       {filename: 'How to speedcube(F2L)'},
       {filename: 'The Future: Blockchain, ML, Quantum Computing'},
-      {filename: 'Better UI/UX design'}*/
+      {filename: 'Better UI/UX design'}
     ],
-    topTrendingVideos: [/*
+    topTrendingVideos: [
       {imgSrc: 'http://placekitten.com/250/200', title: 'How to do the Trinity Flip'},
       {imgSrc: 'http://placekitten.com/250/200', title: 'How to do the Trinity Flip'},
       {imgSrc: 'http://placekitten.com/250/200', title: 'How to do the Trinity Flip'}
-    */]
+    ]
   }),
+  computed: {
+    showVideoPreview(){
+        return this.$store.getters.isVideoPreviewShowing();
+    }
+  },
   methods: {
+    toggleVideoPreview(){
+      this.VideoPreview = !this.VideoPreview;
+    },
     downloadFromURL(){
       // trim input
       this.downloadURL = this.downloadURL.trim();
@@ -71,6 +84,7 @@ export default {
             // check if a video has been specified
             const videoID = u.searchParams.get('v');
             if(videoID){
+              // this.$store.commit('setCurrentDownloadURL', u.href);
               ipcRenderer.send('download', u.href);
             }
             else{
@@ -129,6 +143,11 @@ export default {
   border-radius: 7px;
   font-size: 2em;
   color: var(--primary-text-color);
+  transition: color, background-color 200ms ease-out;
+}
+#search-btn:hover{
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .section{
   margin-top: 40px;
@@ -142,6 +161,7 @@ export default {
   padding: 0px 7px;
   width: fit-content;
   background-color: var(--background-color);
+  cursor: default;
 }
 #my-downloads-section{
   max-height: 400px;
@@ -162,9 +182,14 @@ export default {
   width: 100%;
   display: inline-block;
   border-bottom: 1px solid var(--accent-color);
+  user-select: auto;
+  transition: transform 150ms ease-out;
+}
+#my-downloads-table td:hover{
+  transform: scaleX(0.96);
 }
 #my-downloads-table :nth-child(2n){
-  background-color: var(--secondary-color);
+  background-color: var(--accent-color);
 }
 #trending-section-content{
   display: flex;
@@ -180,18 +205,6 @@ export default {
   border: 1px solid transparent;
   border-radius: 7px;
 }
-#video-preview{
-  z-index: 2;
-  width: 300px;
-  height: 170px;
-  border: 1px solid var(--accent-color);
-  border-radius: 7px;
-  background-color: var(--secondary-color);
-  position: absolute;
-  bottom: 70px;
-  right: 10px;
-  box-shadow: 1px 1.3px 3px var(--accent-color);
-}
 .loading{
   animation: spin 1.7s linear infinite;
 }
@@ -199,5 +212,17 @@ export default {
   100% {
     transform: rotate(360deg);
   }
+}
+.fade-enter,
+.fade-leave-to{
+  opacity: 0;
+}
+.fade-enter-to,
+.fade-leave{
+  opacity: 1;
+}
+.fade-enter-active,
+.fade-leave-active{
+  transition: opacity 200ms ease-out;
 }
 </style>

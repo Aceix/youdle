@@ -7,10 +7,12 @@ Vue.use(Vuex);
 const store = new Vuex.Store({
   state: {
     busy: true,
-    currentDownloadURL: ''
+    currentDownloadURL: '',
+    isVideoPreviewShowing: false
   },
   getters: {
-    getCurrentDownloadURL: state => state.currentDownloadURL
+    getCurrentDownloadURL: state => () => state.currentDownloadURL,
+    isVideoPreviewShowing: state => () => state.isVideoPreviewShowing
   },
   mutations: {
     setBusy(state, b){
@@ -23,6 +25,9 @@ const store = new Vuex.Store({
         state.currentDownloadURL = t.href;
       else
         return false;
+    },
+    setVideoPreviewShowingState(state, st){
+      state.isVideoPreviewShowing = st;
     }
   }
 });

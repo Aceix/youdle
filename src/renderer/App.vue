@@ -11,7 +11,8 @@ export default {
   name: 'youdle',
   components: {
     TopBar: require('@/components/TopBar').default,
-    StatusBar: require('@/components/StatusBar').default
+    StatusBar: require('@/components/StatusBar').default,
+    HomeView: require('@/components/HomeView').default,
   },
   data: () => ({
     currentStatusText: ''

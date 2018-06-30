@@ -5,7 +5,7 @@
     <div class="divider"></div>
     <div id="status">{{statusText}}</div>
     <div class="divider"></div>
-    <button id="preview-btn"><img src="static/vod.png" alt="vod"></button>
+    <button id="preview-btn" @click="toggleVideoPreview"><img src="static/vod.png" alt="vod"></button>
   </div>
 </template>
 
@@ -16,6 +16,12 @@ export default {
     statusText: {
       type: String,
       default: 'Welcome to youdle by @the_aceix'
+    }
+  },
+  methods: {
+    toggleVideoPreview(){
+      const st = this.$store.getters.isVideoPreviewShowing();
+      this.$store.commit('setVideoPreviewShowingState', !st);
     }
   }
 };
