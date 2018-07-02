@@ -1,7 +1,7 @@
 <template>
   <div id="wrapper">
-    <div id="logo">youdle</div>
-    <button id="profile-btn">Login</button>
+    <div id="logo"><router-link to="/">youdle</router-link></div>
+    <button id="profile-btn" title="coming soon..">Login</button>
   </div>
 </template>
 

@@ -1,8 +1,11 @@
 <template>
   <div id="app">
     <top-bar></top-bar>
-    <router-view class="main-view" @ytStatus="onYtStatus(st)"></router-view>
+    <!-- <transition name="page" mode="in-out"> -->
+      <router-view class="main-view" @yt-status="onYtStatus(st)"></router-view>
+    <!-- </transition> -->
     <status-bar :statusText="currentStatusText"></status-bar>
+    <!-- <aside class="cover">&nbsp;</aside> -->
   </div>
 </template>
 
@@ -17,11 +20,17 @@ export default {
   data: () => ({
     currentStatusText: ''
   }),
-  methods: {
-    onYtStatus(st){
-      console.log('evt received');
-      this.currentStatusText = st;
-    }
+  methods: {},
+  created(){
+    this.$electron.ipcRenderer.on('yt-status', (evt, status) => {
+      this.currentStatusText = status;
+    });
+    this.$electron.ipcRenderer.on('config-updated', (evt, newConfig) => {
+      this.$store.commit('updateAppConfig', newConfig);
+      console.log('config updated in Vue');
+    });
+
+    this.$electron.ipcRenderer.send('vue-app-ready');
   }
 }
 </script>
@@ -51,5 +60,30 @@ export default {
 }
 ::-webkit-scrollbar { 
   display: none; 
+}
+a,
+a:visited,
+a:active,
+a:hover{
+  text-decoration: none;
+  color: var(--primary-text-color);
+}
+.cover{
+  z-index: 10;
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--background-color);
+  opacity: 0;
+  display: none;
+}
+
+.page-enter-active, .page-leave-active {
+  transition: opacity 1s, transform 1s;
+  /* height: 300px; */
+}
+.page-enter, .page-leave-to {
+  opacity: 0;
+  transform: translateX(-30%);
 }
 </style>

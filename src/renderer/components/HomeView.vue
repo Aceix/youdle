@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <section id="search-section">
-      <input type="text" name="search-box" id="search-box" placeholder="YouTube Video URL" v-model="downloadURL" @keypress="onSearchBoxKeyPress">
+      <input type="text" name="search-box" id="search-box" placeholder="YouTube Video URL" autofocus v-model="downloadURL" @keypress="onSearchBoxKeyPress">
       <button id="search-btn" @click="downloadFromURL">&gt;</button>
     </section>
     <section id="my-downloads-section" class="section">
@@ -18,7 +18,7 @@
       <div class="section-header">Trending</div>
       <div id="trending-section-content">
         <img v-if="!isTopTrendingVideosReady" src="static/loading.png" alt="loading" class="loading" style="margin: auto;">
-        <p v-if="isTopTrendingVideosReady && topTrendingVideos.length == 0">No trending videos information available</p>
+        <p v-if="isTopTrendingVideosReady && topTrendingVideos.length == 0">No information on trending videos available</p>
         <template v-else>
           <div v-for="(vid, i) in topTrendingVideos" :key="'tv-' + i" class="trending-video-thumbnail">
             <img :src="vid.imgSrc" :alt="vid.title">
@@ -56,11 +56,11 @@ export default {
       {filename: 'The Future: Blockchain, ML, Quantum Computing'},
       {filename: 'Better UI/UX design'}
     ],
-    topTrendingVideos: [
+    topTrendingVideos: [/*
       {imgSrc: 'http://placekitten.com/250/200', title: 'How to do the Trinity Flip'},
       {imgSrc: 'http://placekitten.com/250/200', title: 'How to do the Trinity Flip'},
       {imgSrc: 'http://placekitten.com/250/200', title: 'How to do the Trinity Flip'}
-    ]
+    */]
   }),
   computed: {
     showVideoPreview(){
@@ -94,7 +94,7 @@ export default {
           }
           else{
             this.downloadURL = '';
-            window.alert('Only YouTube URLs please!');
+            window.alert('Only YouTube video URLs please!');
           }
         }
         // commit to store
@@ -104,7 +104,7 @@ export default {
         console.log(e.code);
         if(e.code === 'ERR_INVALID_URL'){
           this.downloadURL = '';
-          window.alert('Only YouTube URLs please!');
+          window.alert('Only YouTube video URLs please!');
         }
       }
     },
@@ -113,7 +113,8 @@ export default {
         this.downloadFromURL();
       }
     }
-  }
+  },
+  created(){}
 }
 </script>
 
@@ -183,10 +184,12 @@ export default {
   display: inline-block;
   border-bottom: 1px solid var(--accent-color);
   user-select: auto;
+  cursor: pointer;
   transition: transform 150ms ease-out;
 }
 #my-downloads-table td:hover{
   transform: scaleX(0.96);
+  color: var(--primary-text-color);
 }
 #my-downloads-table :nth-child(2n){
   background-color: var(--accent-color);
@@ -204,6 +207,7 @@ export default {
 .trending-video-thumbnail > img{
   border: 1px solid transparent;
   border-radius: 7px;
+  box-shadow: 1px 2px 5px var(--accent-color);
 }
 .loading{
   animation: spin 1.7s linear infinite;

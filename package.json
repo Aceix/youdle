@@ -21,6 +21,7 @@
     "postinstall": ""
   },
   "dependencies": {
+    "shelljs": "^0.8.2",
     "vue": "^2.5.16",
     "vue-electron": "^1.0.6",
     "vue-router": "^2.5.3",

@@ -1,7 +1,7 @@
 import Vue from 'vue'
 
-import router from './router'
-import store from './store'
+import router from './router.js'
+import store from './store.js'
 import App from './App'
 
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))

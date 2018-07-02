@@ -1,17 +1,24 @@
 <template>
   <div id="wrapper">
-    <button id="settings-btn"><img src="static/st.png" alt="st"></button>
-    <button id="playlist-btn"><img src="static/playlist.png" alt="pl"></button>
+    <router-link to="/settings"><button id="settings-btn" title="settings"><img src="static/st.png" alt="st"></button></router-link>
+    <router-link to="/"><button id="playlist-btn" title="playlist"><img src="static/playlist.png" alt="pl"></button></router-link>
     <div class="divider"></div>
     <div id="status">{{statusText}}</div>
     <div class="divider"></div>
-    <button id="preview-btn" @click="toggleVideoPreview"><img src="static/vod.png" alt="vod"></button>
+    <button id="preview-btn" @click="toggleVideoPreview" v-show="canPreviewVideo" title="video preview"><img src="static/vod.png" alt="vod"></button>
   </div>
 </template>
 
 <script>
 export default {
   data: () => ({}),
+  computed: {
+    canPreviewVideo(){
+      if(this.$route.path === '/')
+        return true;
+      return false;
+    }
+  },
   props: {
     statusText: {
       type: String,
@@ -58,9 +65,13 @@ button:active{
 #status{
   margin: auto;
   width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
   margin-right: 10px;
   text-shadow: 1px 0.7px 2px #333;
   user-select: text;
+  text-overflow: ellipsis;
+  /* display: inline-block; */
 }
 #preview-btn{
   margin-left: auto;

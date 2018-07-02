@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <img v-if="!videoURL" src="static/video-preview.png" alt="cover" class="cover">
+    <img v-if="!videoURL" src="static/video-preview.png" alt="vid-cover" class="vid-cover">
     <iframe v-else :src="videoURL" frameborder="0" class="video"></iframe>
   </div>
 </template>
@@ -14,8 +14,7 @@ export default {
     }
   },
   data(){
-    return {
-    }
+    return {}
   }
 }
 </script>
@@ -33,7 +32,7 @@ export default {
   right: 10px;
   box-shadow: 1px 1.3px 3px var(--accent-color);
 }
-.cover{
+.vid-cover{
   width: 100%;
   height: 100%;
 }

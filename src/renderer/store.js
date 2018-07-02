@@ -2,17 +2,21 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import url from 'url';
 
-Vue.use(Vuex);
+Vue.use(Vuex, {
+  strict: process.env.NODE_ENV !== 'production'
+});
 
 const store = new Vuex.Store({
   state: {
     busy: true,
     currentDownloadURL: '',
-    isVideoPreviewShowing: false
+    isVideoPreviewShowing: false,
+    appConfig: null
   },
   getters: {
     getCurrentDownloadURL: state => () => state.currentDownloadURL,
-    isVideoPreviewShowing: state => () => state.isVideoPreviewShowing
+    isVideoPreviewShowing: state => () => state.isVideoPreviewShowing,
+    getAppConfig: state => () => state.appConfig
   },
   mutations: {
     setBusy(state, b){
@@ -28,6 +32,9 @@ const store = new Vuex.Store({
     },
     setVideoPreviewShowingState(state, st){
       state.isVideoPreviewShowing = st;
+    },
+    updateAppConfig(state, nc){
+      state.appConfig = nc;
     }
   }
 });
