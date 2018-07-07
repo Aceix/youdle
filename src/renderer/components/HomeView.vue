@@ -33,7 +33,7 @@
       </div>
     </section>
     <transition name="fade">
-      <VideoPreview v-if="showVideoPreview" class="video-preview"/>
+      <VideoPreview v-if="showVideoPreview" :videoID="videoID" class="video-preview"/>
     </transition>
   </div>
 </template>
@@ -78,6 +78,28 @@ export default {
         return this.$store.getters.getActiveDownloadsList();
       else 
         return [];
+    },
+    videoID(){
+      try{
+        const u = new URL(this.downloadURL);
+        if(u){
+          if(u.hostname === 'www.youtube.com' || u.hostname === 'youtube.com'){
+            // check if a video has been specified
+            const videoID = u.searchParams.get('v');
+            if(videoID)
+              return videoID;
+            else
+              return null;
+          }
+        }
+        else{
+          return null;
+        }
+      }
+      catch(e){
+        console.log(e.code);
+        return null;
+      }
     }
   },
   methods: {
@@ -103,7 +125,6 @@ export default {
                   this.$electron.ipcRenderer.send('download', u.href);
                 }
                 else{
-                  console.log('test');
                   this.$parent.currentStatusText = `Already downloading: ${u.href}`;
                 }
               }
@@ -232,6 +253,10 @@ export default {
   border-radius: 7px;
   box-shadow: 1px 2px 5px var(--accent-color);
 }
+.active-downloads-item{
+  color: var(--primary-text-color);
+}
+
 .loading{
   animation: spin 1.7s linear infinite;
 }

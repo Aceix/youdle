@@ -1,16 +1,34 @@
 <template>
   <div class="container">
-    <img v-if="!videoURL" src="static/video-preview.png" alt="vid-cover" class="vid-cover">
-    <iframe v-else :src="videoURL" frameborder="0" class="video"></iframe>
+    <img v-if="!computedVideoID" src="static/video-preview.png" alt="vid-cover" class="vid-cover">
+    <iframe v-else :src="'https://www.youtube.com/embed/' + computedVideoID" frameborder="0" allow="autoplay; encrypted-media" class="vid"></iframe>
+
+    <!-- <iframe class="vid" src="https://www.youtube.com/embed/JoWg0XNE7TQ" frameborder="0" allow="autoplay; encrypted-media"></iframe> -->
   </div>
 </template>
 
 <script>
 export default {
   props: {
-    videoURL: {
+    videoID: {
       type: String,
       required: false
+    }
+  },
+  computed:{
+    computedVideoID(){
+      if(!window.navigator.onLine){
+        // compter is offline
+        return null;
+      }
+      else if(this.videoID){
+        // computer is online and video id is sent
+        return this.videoID
+      }
+      else{
+        // computer is online but video id is not sent
+        return null;
+      }
     }
   },
   data(){
@@ -33,6 +51,10 @@ export default {
   box-shadow: 1px 1.3px 3px var(--accent-color);
 }
 .vid-cover{
+  width: 100%;
+  height: 100%;
+}
+.vid{
   width: 100%;
   height: 100%;
 }
