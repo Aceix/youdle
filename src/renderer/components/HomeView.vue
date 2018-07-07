@@ -4,6 +4,12 @@
       <input type="text" name="search-box" id="search-box" placeholder="YouTube Video URL" autofocus v-model="downloadURL" @keypress="onSearchBoxKeyPress">
       <button id="search-btn" @click="downloadFromURL">&gt;</button>
     </section>
+    <section id="active-downloads-section" class="section">
+      <div class="section-header">Active Downloads</div>
+      <img v-if="!activeDownloads" src="static/loading.png" alt="loading" class="loading" style="margin: auto;">
+      
+      <div v-for="(dl, i) in activeDownloads" :key="i" class="active-downloads-item">{{dl}}</div>
+    </section>
     <section id="my-downloads-section" class="section">
       <div class="section-header">My Downloads</div>
       <img v-if="!isDownloadsReady" src="static/loading.png" alt="loading" class="loading" style="margin: auto;">
@@ -20,7 +26,7 @@
         <img v-if="!isTopTrendingVideosReady" src="static/loading.png" alt="loading" class="loading" style="margin: auto;">
         <p v-if="isTopTrendingVideosReady && topTrendingVideos.length == 0">No information on trending videos available</p>
         <template v-else>
-          <div v-for="(vid, i) in topTrendingVideos" :key="'tv-' + i" class="trending-video-thumbnail">
+          <div v-for="(vid, i) in topTrendingVideos" :key="i" class="trending-video-thumbnail">
             <img :src="vid.imgSrc" :alt="vid.title">
           </div>
         </template>
@@ -35,10 +41,11 @@
 <script>
 import {URL} from 'url';
 import {fail} from 'assert';
-import {ipcRenderer} from 'electron';
+// import {ipcRenderer} from 'electron';
 import VideoPreview from '@/components/VideoPreview.vue';
 
 export default {
+  name: 'home-view',
   components: {
     VideoPreview
   },
@@ -64,7 +71,13 @@ export default {
   }),
   computed: {
     showVideoPreview(){
-        return this.$store.getters.isVideoPreviewShowing();
+      return this.$store.getters.isVideoPreviewShowing();
+    },
+    activeDownloads(){
+      if(this.$store)
+        return this.$store.getters.getActiveDownloadsList();
+      else 
+        return [];
     }
   },
   methods: {
@@ -85,7 +98,17 @@ export default {
             const videoID = u.searchParams.get('v');
             if(videoID){
               // this.$store.commit('setCurrentDownloadURL', u.href);
-              ipcRenderer.send('download', u.href);
+              if(this.$store){
+                if(this.$store.getters.isActiveDownload(u.href)){
+                  this.$electron.ipcRenderer.send('download', u.href);
+                }
+                else{
+                  console.log('test');
+                  this.$parent.currentStatusText = `Already downloading: ${u.href}`;
+                }
+              }
+              else
+                this.$electron.ipcRenderer.send('download', u.href);
             }
             else{
               this.downloadURL = '';

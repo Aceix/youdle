@@ -46,7 +46,7 @@ export default {
       newAppConfig.downloadsDirectory = this.newDownloadsDirectory || this.appConfig.downloadsDirectory;
       if(this.newVideoQuality)
         newAppConfig.videoQuality = {code: this.newVideoQualityCode, name: this.$refs.videoQuality.options[this.$refs.videoQuality.selectedIndex].textContent};
-      console.log(newAppConfig);
+      // console.log(newAppConfig);
       this.$electron.ipcRenderer.send('update-config', newAppConfig);
     }
   },

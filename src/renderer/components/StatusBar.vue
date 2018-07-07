@@ -3,7 +3,7 @@
     <router-link to="/settings"><button id="settings-btn" title="settings"><img src="static/st.png" alt="st"></button></router-link>
     <router-link to="/"><button id="playlist-btn" title="playlist"><img src="static/playlist.png" alt="pl"></button></router-link>
     <div class="divider"></div>
-    <div id="status">{{statusText}}</div>
+    <div id="status" :title="statusText">{{statusText}}</div>
     <div class="divider"></div>
     <button id="preview-btn" @click="toggleVideoPreview" v-show="canPreviewVideo" title="video preview"><img src="static/vod.png" alt="vod"></button>
   </div>
@@ -40,6 +40,7 @@ export default {
   flex-flow: row nowrap;
   align-items: center;
   height: 100%;
+  width: 100vw;
   color: var(--secondary-text-color);
   background-color: var(--primary-color);
 }

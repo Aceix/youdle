@@ -9,24 +9,32 @@ Vue.use(Vuex, {
 const store = new Vuex.Store({
   state: {
     busy: true,
-    currentDownloadURL: '',
+    videoPreviewURL: '',
     isVideoPreviewShowing: false,
-    appConfig: null
+    appConfig: null,
+    activeDownloadsList: []
   },
   getters: {
-    getCurrentDownloadURL: state => () => state.currentDownloadURL,
+    getVideoPreviewURL: state => () => state.videoPreviewURL,
     isVideoPreviewShowing: state => () => state.isVideoPreviewShowing,
-    getAppConfig: state => () => state.appConfig
+    getAppConfig: state => () => state.appConfig,
+    getActiveDownloadsList: state => () => state.activeDownloadsList,
+    isActiveDownload: state => (u) => {
+      let t = new url.URL(u);
+      if(t && state.activeDownloadsList.indexOf(u) !== -1)
+       return false;
+      return true;
+    }
   },
   mutations: {
     setBusy(state, b){
       state.busy = true;
     },
-    setCurrentDownloadURL(state, u){
+    setVideoPreviewURL(state, u){
       // confirm its a valid Youtube URL
       const tmp = new url.URL(url);
       if(tmp && tmp.hostname == 'youtube.com')
-        state.currentDownloadURL = t.href;
+        state.videoPreviewURL = tmp.href;
       else
         return false;
     },
@@ -35,6 +43,16 @@ const store = new Vuex.Store({
     },
     updateAppConfig(state, nc){
       state.appConfig = nc;
+    },
+    addToActiveDownloadsList(state, url){
+      if(state.activeDownloadsList.includes(url))
+        return;  // this should actually send a signal
+      else
+        state.activeDownloadsList.push(url);
+    },
+    removeFromActiveDownloadsList(state, url){
+      let i = state.activeDownloadsList.findIndex((val) => {val == url});
+      state.activeDownloadsList.splice(i, 1);
     }
   }
 });

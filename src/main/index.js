@@ -1,9 +1,8 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import {app, BrowserWindow, ipcMain, dialog} from 'electron';
 import shell from 'shelljs';
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
-import { resolve } from 'dns';
 
 /**
  * Set `__static` path to static files in production
@@ -61,6 +60,20 @@ function loadConfig() {
   }
 }
 
+function checkForDependencies(){
+  let t = shell.which('youtube-dl');
+  
+  if(t === null){
+    dialog.showErrorBox(
+      'Missing Dependency',
+      'A crucial dependency of this software is not found on your conputer.\nVisit: https://rg3.github.io/youtube-dl/download.html to download and\nMake sure it is in your PATH variable.'
+    );
+    return false;
+  }
+
+  return true;
+}
+
 function createWindow() {
   /**
    * Initial window options
@@ -70,7 +83,8 @@ function createWindow() {
     minHeight: 245,
     minWidth: 1000,
     width: 1000,
-    useContentSize: true
+    useContentSize: true,
+    icon: path.join(__dirname, '..', '..', 'static', 'youdle-logo.png')
   });
 
   mainWindow.loadURL(winURL);
@@ -81,6 +95,8 @@ function createWindow() {
 }
 
 app.on('ready', launchInfo => {
+  if(!checkForDependencies())
+    app.exit(1);
   loadConfig();
   createWindow();
 });
@@ -106,17 +122,24 @@ ipcMain.on('download', (evt, url) => {
   // check if youtube-dl is not found
   const cp = shell.exec(`youtube-dl -f ${appConfig.videoQuality.code} ${url}`, shellOptions, (exitCode, stdout, stderr) => {
     console.log('Exit code:', exitCode);
+    mainWindow.webContents.send('download-ended', url);
     // console.log('Program output:', stdout);
     // console.log('Program stderr:', stderr);
   });
+  mainWindow.webContents.send('download-started', url);
   cp.stdout.on('data', chunk => {
+    mainWindow.webContents.send('yt-status', String(chunk));
+  });
+  cp.stderr.on('data', chunk => {
     mainWindow.webContents.send('yt-status', String(chunk));
   });
   // cp.stdout.on('close', () => {});
 });
+
 ipcMain.on('vue-app-ready', (evt) => {
   mainWindow.webContents.send('config-updated', appConfig);
 });
+
 ipcMain.on('update-config', (evt, newConfig) => {
   // first check if new directory exists
   fs.access(newConfig.downloadsDirectory, err => {

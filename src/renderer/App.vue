@@ -1,9 +1,11 @@
 <template>
   <div id="app">
     <top-bar></top-bar>
+    <keep-alive include="home-view">
     <!-- <transition name="page" mode="in-out"> -->
       <router-view class="main-view" @yt-status="onYtStatus(st)"></router-view>
     <!-- </transition> -->
+    </keep-alive>
     <status-bar :statusText="currentStatusText"></status-bar>
     <!-- <aside class="cover">&nbsp;</aside> -->
   </div>
@@ -27,7 +29,15 @@ export default {
     });
     this.$electron.ipcRenderer.on('config-updated', (evt, newConfig) => {
       this.$store.commit('updateAppConfig', newConfig);
-      console.log('config updated in Vue');
+      // console.log('config updated in Vue');
+    });
+    this.$electron.ipcRenderer.on('download-started', (evt, url) => {
+      this.$store.commit('addToActiveDownloadsList', url);
+      console.log(`download-started: ${url}`);
+    });
+    this.$electron.ipcRenderer.on('download-ended', (evt, url) => {
+      this.$store.commit('removeFromActiveDownloadsList', url);
+      console.log(`download-ended: ${url}`);
     });
 
     this.$electron.ipcRenderer.send('vue-app-ready');
