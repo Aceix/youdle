@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div id="home-view">
     <section id="search-section">
       <input type="text" name="search-box" id="search-box" placeholder="YouTube Video URL" autofocus v-model="downloadURL" @keypress="onSearchBoxKeyPress">
       <button id="search-btn" @click="downloadFromURL">&gt;</button>
@@ -152,8 +152,8 @@ export default {
         }
       }
     },
-    onSearchBoxKeyPress(ev){
-      if(ev.key === 'Enter'){
+    onSearchBoxKeyPress(evt){
+      if(evt.key === 'Enter'){
         this.downloadFromURL();
       }
     }
@@ -163,7 +163,7 @@ export default {
 </script>
 
 <style scoped>
-.container{
+#home-view{
   display: flex;
   flex-flow: column nowrap;
 }
@@ -227,7 +227,7 @@ export default {
   width: 100%;
   display: inline-block;
   border-bottom: 1px solid var(--accent-color);
-  user-select: auto;
+  user-select: text;
   cursor: pointer;
   transition: transform 150ms ease-out;
 }

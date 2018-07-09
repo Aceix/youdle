@@ -118,9 +118,15 @@ ipcMain.on('download', (evt, url) => {
     async: true,
     cwd: appConfig.downloadsDirectory
   };
+  const youtubeDlOptions = [
+    String(url),
+    `-f ${appConfig.videoQuality.code}`,
+    '--no-playlist',
+    '--retries 4'
+  ];
 
   // check if youtube-dl is not found
-  const cp = shell.exec(`youtube-dl -f ${appConfig.videoQuality.code} ${url}`, shellOptions, (exitCode, stdout, stderr) => {
+  const cp = shell.exec('youtube-dl ' + youtubeDlOptions.join(' '), shellOptions, (exitCode, stdout, stderr) => {
     console.log('Exit code:', exitCode);
     mainWindow.webContents.send('download-ended', url);
     // console.log('Program output:', stdout);
@@ -160,4 +166,26 @@ ipcMain.on('update-config', (evt, newConfig) => {
       })();
     });
   });
+});
+
+ipcMain.on('execute-advanced-command', (evt, command) => {
+  const shellOptions = {
+    async: true,
+    cwd: appConfig.downloadsDirectory
+  };
+
+  try{
+    const cp = shell.exec(String(command), shellOptions, (exitCode, stdout, stderr) => {
+      // mainWindow.webContents.send('advanced-command-ended', stdout);
+    });
+    cp.stdout.on('data', chunk => {
+      mainWindow.webContents.send('advanced-command-status', chunk);
+    });
+    cp.stderr.on('data', chunk => {
+      mainWindow.webContents.send('advanced-command-status', chunk);
+    });
+  }
+  catch(e){
+    dialog.showErrorBox('Invalid Command', e.toString());
+  }
 });

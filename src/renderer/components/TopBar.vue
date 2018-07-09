@@ -1,16 +1,37 @@
 <template>
-  <div id="wrapper">
-    <div id="logo"><router-link to="/">youdle</router-link></div>
-    <button id="profile-btn" title="coming soon..">Login</button>
+  <div id="top-view">
+    <router-link to="/"><div id="logo">youdle</div></router-link>
+    <div id="adv-btn" title="for CLI users of youtube-dl" @click="onAdvancedModeClick">Advanced Mode</div>
   </div>
 </template>
 
 <script>
-export default {};
+export default {
+  watch: {
+    '$route.path': (newPath, oldPath) => {
+      const logo = window.document.getElementById('logo');
+      if(newPath !== '/'){
+        logo.textContent = ' <';
+      }
+      else{
+        logo.textContent = 'youdle';
+      }
+    }
+  },
+  methods: {
+    onAdvancedModeClick(){
+      this.$emit('set-current-aside-view-component', 'AdvancedPanel');
+    }
+  },
+  mounted(){
+    const advBtn = window.document.getElementById('adv-btn');
+    advBtn.textContent = '<Advanced Mode />';
+  }
+};
 </script>
 
 <style scoped>
-#wrapper{
+#top-view{
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
@@ -20,15 +41,22 @@ export default {};
 }
 #logo{
   user-select: none;
-  cursor: default;
+  cursor: pointer;
   font-size: 1.6em;
   margin: 10px;
 }
-#profile-btn{
+#adv-btn{
   margin-left: auto;
   margin-right: 10px;
   border: none;
   color: var(--primary-text-color);
   background: transparent;
+  transition: color 100ms ease-out, transform 300ms linear;
+  cursor: pointer;
+}
+#adv-btn:hover{
+  color: var(--secondary-text-color);
+  text-decoration: underline;
+  transform: scale(1.15, 1.2) rotateZ(-3deg);
 }
 </style>

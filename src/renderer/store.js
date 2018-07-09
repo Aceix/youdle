@@ -9,10 +9,12 @@ Vue.use(Vuex, {
 const store = new Vuex.Store({
   state: {
     busy: true,
+    asideViewOpen: false,
     videoPreviewURL: '',
     isVideoPreviewShowing: false,
     appConfig: null,
-    activeDownloadsList: []
+    activeDownloadsList: [],
+    advancedCommandHistory: []
   },
   getters: {
     getVideoPreviewURL: state => () => state.videoPreviewURL,
@@ -24,7 +26,9 @@ const store = new Vuex.Store({
       if(t && state.activeDownloadsList.indexOf(u) !== -1)
        return false;
       return true;
-    }
+    },
+    getAdvancedCommandHistory: (state) => () => state.advancedCommandHistory,
+    isAsideViewOpen: (state) => () => state.asideViewOpen
   },
   mutations: {
     setBusy(state, b){
@@ -53,6 +57,14 @@ const store = new Vuex.Store({
     removeFromActiveDownloadsList(state, url){
       let i = state.activeDownloadsList.findIndex((val) => {val == url});
       state.activeDownloadsList.splice(i, 1);
+    },
+    addToAdvancedCommandHistory(state, command){
+      state.advancedCommandHistory.push(String(command));
+    },
+    setAsideViewState(state, st){
+      // st must be boolean
+      if(typeof st === 'boolean')
+        state.asideViewOpen = st;
     }
   }
 });

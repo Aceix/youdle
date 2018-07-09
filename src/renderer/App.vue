@@ -1,11 +1,13 @@
 <template>
   <div id="app">
-    <top-bar></top-bar>
+    <top-bar @set-current-aside-view-component="setCurrentAsideViewComponent"></top-bar>
     <keep-alive include="home-view">
-    <!-- <transition name="page" mode="in-out"> -->
-      <router-view class="main-view" @yt-status="onYtStatus(st)"></router-view>
-    <!-- </transition> -->
+      <!-- <transition name="page" mode="in-out"> -->
+        <router-view class="main-view" @yt-status="onYtStatus(st)"></router-view>{{resizeMainView}}
+      <!-- </transition> -->
     </keep-alive>
+    <!-- <div id="aside-view"></div> -->
+    <component :is="currentAsideViewComponent" class="aside-view"></component>
     <status-bar :statusText="currentStatusText"></status-bar>
     <!-- <aside class="cover">&nbsp;</aside> -->
   </div>
@@ -18,11 +20,25 @@ export default {
     TopBar: require('@/components/TopBar').default,
     StatusBar: require('@/components/StatusBar').default,
     HomeView: require('@/components/HomeView').default,
+    AdvancedPanel: require('@/components/AdvancedPanel').default,
   },
   data: () => ({
-    currentStatusText: ''
+    currentStatusText: '',
+    currentAsideViewComponent: 'null'
   }),
-  methods: {},
+  computed: {},
+  watch: {},
+  methods: {
+    setCurrentAsideViewComponent(comp){
+      this.currentAsideViewComponent = comp;
+      if(this.$store.getters.isAsideViewOpen()){
+        this.$store.commit('setAsideViewState', false);
+      }
+      else{
+        this.$store.commit('setAsideViewState', true);
+      }
+    }
+  },
   created(){
     this.$electron.ipcRenderer.on('yt-status', (evt, status) => {
       this.currentStatusText = status;
@@ -38,6 +54,10 @@ export default {
     this.$electron.ipcRenderer.on('download-ended', (evt, url) => {
       this.$store.commit('removeFromActiveDownloadsList', url);
       console.log(`download-ended: ${url}`);
+    });
+    this.$electron.ipcRenderer.on('advanced-command-status', (evt, status) => {
+      console.log('adv stats');
+      this.currentStatusText = 'ADV :: ' + status;
     });
 
     this.$electron.ipcRenderer.send('vue-app-ready');
@@ -58,19 +78,43 @@ export default {
   color: var(--secondary-text-color);
   display: grid;
   grid-template-rows: 50px auto 60px;
-  height: 100%;
-  width: 100%;
+  grid-template-columns: auto 250px;
+  height: 100vh;
+  width: 100vw;
   position: absolute;
   overflow: hidden;
   background-color: var(--background-color);
 }
+#top-view{
+  grid-row: 1 / span 1;
+  grid-column: 1 / span 2;
+}
 .main-view{
   width: 100%;
+  /* height: 100%; */
   overflow-y: auto;
+  grid-row: 2 / span 1;
+  grid-column: 1 / span 1;
+  transition: all 700ms ease-out;
 }
+.main-view:hover{
+  /* grid-column: 1 / span 2; */
+}
+.aside-view{
+  grid-row: 2 / span 1;
+  grid-column: 2 / span 1;
+  width: 100%;
+  overflow: hidden;
+}
+#status-bar{
+  grid-row: 3 / span 1;
+  grid-column: 1 / span 2;
+}
+
 ::-webkit-scrollbar { 
   display: none; 
 }
+
 a,
 a:visited,
 a:active,

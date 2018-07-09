@@ -1,5 +1,5 @@
 <template>
-  <div id="wrapper">
+  <div id="status-bar">
     <router-link to="/settings"><button id="settings-btn" title="settings"><img src="static/st.png" alt="st"></button></router-link>
     <router-link to="/"><button id="playlist-btn" title="playlist"><img src="static/playlist.png" alt="pl"></button></router-link>
     <div class="divider"></div>
@@ -35,7 +35,7 @@ export default {
 </script>
 
 <style scoped>
-#wrapper {
+#status-bar {
   display: flex;
   flex-flow: row nowrap;
   align-items: center;

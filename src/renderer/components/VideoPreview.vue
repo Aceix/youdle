@@ -2,8 +2,6 @@
   <div class="container">
     <img v-if="!computedVideoID" src="static/video-preview.png" alt="vid-cover" class="vid-cover">
     <iframe v-else :src="'https://www.youtube.com/embed/' + computedVideoID" frameborder="0" allow="autoplay; encrypted-media" class="vid"></iframe>
-
-    <!-- <iframe class="vid" src="https://www.youtube.com/embed/JoWg0XNE7TQ" frameborder="0" allow="autoplay; encrypted-media"></iframe> -->
   </div>
 </template>
 
