@@ -2,6 +2,11 @@
 
 > Frontend for youtube-dl(https://github.com/rg3/youtube-dl) made with Electron+Vue
 
+#### Spin up and use
+```bash
+#install dependencies
+npm run build:linux
+
 #### Build Setup
 
 ``` bash

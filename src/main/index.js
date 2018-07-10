@@ -24,7 +24,6 @@ function loadConfig() {
   try{
     fs.access(configFilePath, (err) => {
       if(err && err.errno === -2){
-        console.log('yaaaas');
         const defaultConfig = {
           downloadsDirectory: path.join(os.homedir(), 'Videos'),
           videoQuality: {
@@ -128,22 +127,25 @@ ipcMain.on('download', (evt, url) => {
   // check if youtube-dl is not found
   const cp = shell.exec('youtube-dl ' + youtubeDlOptions.join(' '), shellOptions, (exitCode, stdout, stderr) => {
     console.log('Exit code:', exitCode);
-    mainWindow.webContents.send('download-ended', url);
+    if(exitCode === 127){
+      dialog.showErrorBox('Critical dependency missing', 'youtube-dl is either uninstalled or misconfigured. Please reinstall youtube-dl and add to PATH before downloading');
+    }
+    evt.sender.send('download-ended', url);
     // console.log('Program output:', stdout);
     // console.log('Program stderr:', stderr);
   });
-  mainWindow.webContents.send('download-started', url);
+  evt.sender.send('download-started', url);
   cp.stdout.on('data', chunk => {
-    mainWindow.webContents.send('yt-status', String(chunk));
+    evt.sender.send('yt-status', String(chunk));
   });
   cp.stderr.on('data', chunk => {
-    mainWindow.webContents.send('yt-status', String(chunk));
+    evt.sender.send('yt-status', String(chunk));
   });
   // cp.stdout.on('close', () => {});
 });
 
 ipcMain.on('vue-app-ready', (evt) => {
-  mainWindow.webContents.send('config-updated', appConfig);
+  evt.sender.send('config-updated', appConfig);
 });
 
 ipcMain.on('update-config', (evt, newConfig) => {
@@ -162,7 +164,7 @@ ipcMain.on('update-config', (evt, newConfig) => {
       }
       (async () => {
         await loadConfig();
-        mainWindow.webContents.send('config-updated', appConfig);
+        evt.sender.send('config-updated', appConfig);
       })();
     });
   });
@@ -179,13 +181,26 @@ ipcMain.on('execute-advanced-command', (evt, command) => {
       // mainWindow.webContents.send('advanced-command-ended', stdout);
     });
     cp.stdout.on('data', chunk => {
-      mainWindow.webContents.send('advanced-command-status', chunk);
+      evt.sender.send('advanced-command-status', chunk);
     });
     cp.stderr.on('data', chunk => {
-      mainWindow.webContents.send('advanced-command-status', chunk);
+      evt.sender.send('advanced-command-status', chunk);
     });
   }
   catch(e){
     dialog.showErrorBox('Invalid Command', e.toString());
   }
+});
+
+ipcMain.on('change-downloads-directory', evt => {
+  dialog.showOpenDialog(mainWindow, {
+    properties: ['openDirectory'],
+    defaultPath: appConfig.downloadsDirectory,
+    title: 'Select new downloads directory'
+  }, dirPaths => {
+    if(dirPaths){
+      // console.log(dirPaths[0]);
+      evt.sender.send('change-downloads-directory-path', dirPaths[0]);
+    }
+  });
 });

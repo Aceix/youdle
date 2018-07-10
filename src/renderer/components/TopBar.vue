@@ -51,12 +51,11 @@ export default {
   border: none;
   color: var(--primary-text-color);
   background: transparent;
-  transition: color 100ms ease-out, transform 300ms linear;
+  transition: color 200ms linear;
   cursor: pointer;
 }
 #adv-btn:hover{
   color: var(--secondary-text-color);
   text-decoration: underline;
-  transform: scale(1.15, 1.2) rotateZ(-3deg);
 }
 </style>

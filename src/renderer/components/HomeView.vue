@@ -11,7 +11,7 @@
       <div v-for="(dl, i) in activeDownloads" :key="i" class="active-downloads-item">{{dl}}</div>
     </section>
     <section id="my-downloads-section" class="section">
-      <div class="section-header">My Downloads</div>
+      <div class="section-header">My Downloads(coming soon)</div>
       <img v-if="!isDownloadsReady" src="static/loading.png" alt="loading" class="loading" style="margin: auto;">
       <p v-if="isDownloadsReady && downloads.length == 0" style="margin: auto; width: fit-content;">No downloads yet</p>
       <table v-else id="my-downloads-table">

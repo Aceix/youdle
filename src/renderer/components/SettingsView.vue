@@ -1,10 +1,16 @@
 <template>
-  <div class="container">
+  <div id="settingsview">
     <h2 class="heading">Application Settings</h2>
     <div class="section" style="border: none">
       <div class="setting">
-        <label for="download-directory">Download Directory:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
-        <input type="text" name="downloads-directory" id="downloads-directory" ref="downloads-directory" v-model="newDownloadsDirectory">
+        <label for="download-directory">Download Directory:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+        <div>
+          
+          <!-- needs working on!! caching not wanted -->
+          <span type="text" name="downloads-directory" id="downloads-directory" ref="downloads-directory">{{newDownloadsDirectory || appConfig.downloadsDirectory}}</span>
+
+          <button id="change-downloads-directory-btn" ref="change-downloads-directory-btn" @click="onChangeDownloadsDirectoryButtonClick">Change</button>
+        </div>
       </div>
     </div>
     <section class="section" id="video-settings-section">
@@ -31,6 +37,7 @@
 
 <script>
 export default {
+  name: 'settings-view',
   data: () => ({
     newDownloadsDirectory: '',
     newVideoQualityCode: null
@@ -48,16 +55,23 @@ export default {
         newAppConfig.videoQuality = {code: this.newVideoQualityCode, name: this.$refs.videoQuality.options[this.$refs.videoQuality.selectedIndex].textContent};
       // console.log(newAppConfig);
       this.$electron.ipcRenderer.send('update-config', newAppConfig);
+    },
+    onChangeDownloadsDirectoryButtonClick(){
+      this.$electron.ipcRenderer.send('change-downloads-directory');
     }
   },
   created(){
     this.$electron.ipcRenderer.on('update-config-error', (evt, err) => {
       window.alert('===========\n' + err.toString());
     });
+    this.$electron.ipcRenderer.on('change-downloads-directory-path', (evt, dirPath) => {
+      this.newDownloadsDirectory = dirPath;
+    });
+    console.log('settings-view created!! newdf: ' + this.newDownloadsDirectory);
   },
   mounted(){
     setTimeout(() => {
-      this.$refs['downloads-directory'].placeholder = this.appConfig.downloadsDirectory;
+      // this.$refs['downloads-directory'].textContent = this.appConfig.downloadsDirectory;
       let o = this.$refs['video-quality'].options;
       for(let i = 0; i < o.length; i++){
         if(o[i].value === this.appConfig.videoQuality.code){
@@ -66,11 +80,14 @@ export default {
         }
       }
     }, 300);
+  },
+  destroyed(){
+    console.log('settings-view destroyed!! newdf: ' + this.newDownloadsDirectory);
   }
 }
 </script>
 
-<style>
+<style scoped>
 .heading{
   cursor: default;
   text-align: center;
@@ -127,5 +144,26 @@ export default {
 }
 #save-btn{
   font-weight: 900;
+}
+#downloads-directory{
+  color: var(--primary-text-color);
+}
+#change-downloads-directory-btn{
+  float: right;
+  border: 1px solid var(--accent-color);
+  border-radius: 7px;
+  /* height: 40px; */
+  width: 100px;
+  background-color: var(--background-color);
+  color: var(--primary-text-color);
+  transition: background-color 200ms linear;
+}
+#change-downloads-directory-btn:hover{
+  background-color: var(--primary-text-color);
+  color: var(--accent-color);
+  transition: background-color 100ms ease-out;
+}
+#change-downloads-directory-btn:active{
+  background-color: var(--background-color);
 }
 </style>

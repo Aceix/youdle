@@ -1,13 +1,14 @@
 <template>
   <div id="app">
     <top-bar @set-current-aside-view-component="setCurrentAsideViewComponent"></top-bar>
-    <keep-alive include="home-view">
-      <!-- <transition name="page" mode="in-out"> -->
-        <router-view class="main-view" @yt-status="onYtStatus(st)"></router-view>{{resizeMainView}}
-      <!-- </transition> -->
-    </keep-alive>
-    <!-- <div id="aside-view"></div> -->
-    <component :is="currentAsideViewComponent" class="aside-view"></component>
+    <div class="main-view">
+      <keep-alive include="home-view">
+        <!-- <transition name="page" mode="in-out"> -->
+          <router-view ref="main-view" @yt-status="onYtStatus(st)"></router-view>
+        <!-- </transition> -->
+      </keep-alive>
+    </div>
+    <component :is="currentAsideViewComponent" ref="aside-view" class="aside-view"></component>
     <status-bar :statusText="currentStatusText"></status-bar>
     <!-- <aside class="cover">&nbsp;</aside> -->
   </div>
@@ -24,14 +25,14 @@ export default {
   },
   data: () => ({
     currentStatusText: '',
-    currentAsideViewComponent: 'null'
+    currentAsideViewComponent: null
   }),
   computed: {},
   watch: {},
   methods: {
     setCurrentAsideViewComponent(comp){
       this.currentAsideViewComponent = comp;
-      if(this.$store.getters.isAsideViewOpen()){
+      if(this.$store.getters.isAsideViewOpen() && this.currentAsideViewComponent == comp){
         this.$store.commit('setAsideViewState', false);
       }
       else{
@@ -58,6 +59,20 @@ export default {
     this.$electron.ipcRenderer.on('advanced-command-status', (evt, status) => {
       console.log('adv stats');
       this.currentStatusText = 'ADV :: ' + status;
+    });
+    const unwatchAsideViewOpen = this.$store.watch((state, getters) => this.$store.state.asideViewOpen, (val) => {
+      // console.log(val);
+      const mv = window.document.getElementsByClassName('main-view')[0];
+      const av = this.$refs['aside-view'] ? window.document.getElementsByClassName('aside-view')[0] : null;
+      // console.log(mv);
+      if(val){
+        mv.style.gridColumn = '1 / span 1';
+        av ? av.style.gridColumn = '2 / span 1' : null;
+      }
+      else{
+        mv.style.gridColumn = '1 / span 2';
+        av ? av.style.gridColumn = '3 / 3' : null;
+      }
     });
 
     this.$electron.ipcRenderer.send('vue-app-ready');
@@ -91,15 +106,14 @@ export default {
 }
 .main-view{
   width: 100%;
-  /* height: 100%; */
   overflow-y: auto;
   grid-row: 2 / span 1;
-  grid-column: 1 / span 1;
+  grid-column: 1 / span 2;
   transition: all 700ms ease-out;
 }
-.main-view:hover{
-  /* grid-column: 1 / span 2; */
-}
+/* .main-view:hover{
+  grid-column: 1 / span 2;
+} */
 .aside-view{
   grid-row: 2 / span 1;
   grid-column: 2 / span 1;

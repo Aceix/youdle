@@ -1,7 +1,7 @@
 <template>
   <div id="adv-panel">
     <section id="output-section" class="section">
-      <div class="section-header">Output</div>
+      <div class="section-header">Command History</div>
       <ul id="output-group">
         <li v-for="(it, i) in commandHistory" :key="i" class="output-item">{{it}}</li>
       </ul>
@@ -63,7 +63,7 @@ export default {
   padding: 0px 20px;
 }
 .section-header{
-  margin: -10px 10px 7px 20px;
+  margin: -10px auto 7px auto;
   padding: 0px 7px;
   width: fit-content;
   background-color: var(--background-color);
