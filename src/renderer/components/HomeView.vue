@@ -194,6 +194,9 @@ export default {
   background-color: var(--primary-text-color);
   color: var(--primary-color);
 }
+#search-btn:active{
+  background-color: var(--background-color);
+}
 .section{
   margin-top: 40px;
   margin-left: 30px;

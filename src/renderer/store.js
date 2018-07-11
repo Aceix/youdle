@@ -14,7 +14,8 @@ const store = new Vuex.Store({
     isVideoPreviewShowing: false,
     appConfig: null,
     activeDownloadsList: [],
-    advancedCommandHistory: []
+    advancedCommandHistory: [],
+    downloadlist: []
   },
   getters: {
     getVideoPreviewURL: state => () => state.videoPreviewURL,
@@ -28,7 +29,8 @@ const store = new Vuex.Store({
       return true;
     },
     getAdvancedCommandHistory: (state) => () => state.advancedCommandHistory,
-    isAsideViewOpen: (state) => () => state.asideViewOpen
+    isAsideViewOpen: (state) => () => state.asideViewOpen,
+    getDownloadlist: (state) => () => state.downloadlist
   },
   mutations: {
     setBusy(state, b){
@@ -65,7 +67,8 @@ const store = new Vuex.Store({
       // st must be boolean
       if(typeof st === 'boolean')
         state.asideViewOpen = st;
-    }
+    },
+    addToDownloadlist(state, url){}
   }
 });
 

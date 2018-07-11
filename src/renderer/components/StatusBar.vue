@@ -1,7 +1,7 @@
 <template>
   <div id="status-bar">
     <router-link to="/settings"><button id="settings-btn" title="settings"><img src="static/st.png" alt="st"></button></router-link>
-    <router-link to="/"><button id="playlist-btn" title="playlist"><img src="static/playlist.png" alt="pl"></button></router-link>
+    <button id="downloadlist-btn" title="downloadlist" @click="onDownloadListBtnClick"><img src="static/downloadlist.png" alt="pl"></button>
     <div class="divider"></div>
     <div id="status" :title="statusText">{{statusText}}</div>
     <div class="divider"></div>
@@ -29,6 +29,9 @@ export default {
     toggleVideoPreview(){
       const st = this.$store.getters.isVideoPreviewShowing();
       this.$store.commit('setVideoPreviewShowingState', !st);
+    },
+    onDownloadListBtnClick(){
+      this.$emit('set-current-aside-view-component', 'DownloadlistView');
     }
   }
 };
@@ -60,7 +63,7 @@ button:active{
 #settings-btn{
   margin: 0px 10px;
 }
-#playlist-btn{
+#downloadlist-btn{
   margin-right: 10px;
 }
 #status{

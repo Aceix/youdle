@@ -67,7 +67,7 @@ export default {
     this.$electron.ipcRenderer.on('change-downloads-directory-path', (evt, dirPath) => {
       this.newDownloadsDirectory = dirPath;
     });
-    console.log('settings-view created!! newdf: ' + this.newDownloadsDirectory);
+    // console.log('settings-view created!! newdf: ' + this.newDownloadsDirectory);
   },
   mounted(){
     setTimeout(() => {
@@ -82,7 +82,7 @@ export default {
     }, 300);
   },
   destroyed(){
-    console.log('settings-view destroyed!! newdf: ' + this.newDownloadsDirectory);
+    // console.log('settings-view destroyed!! newdf: ' + this.newDownloadsDirectory);
   }
 }
 </script>

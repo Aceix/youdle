@@ -9,7 +9,7 @@
       </keep-alive>
     </div>
     <component :is="currentAsideViewComponent" ref="aside-view" class="aside-view"></component>
-    <status-bar :statusText="currentStatusText"></status-bar>
+    <status-bar :statusText="currentStatusText" @set-current-aside-view-component="setCurrentAsideViewComponent"></status-bar>
     <!-- <aside class="cover">&nbsp;</aside> -->
   </div>
 </template>
@@ -22,6 +22,7 @@ export default {
     StatusBar: require('@/components/StatusBar').default,
     HomeView: require('@/components/HomeView').default,
     AdvancedPanel: require('@/components/AdvancedPanel').default,
+    DownloadlistView: require('@/components/DownloadlistView').default
   },
   data: () => ({
     currentStatusText: '',
@@ -31,13 +32,13 @@ export default {
   watch: {},
   methods: {
     setCurrentAsideViewComponent(comp){
-      this.currentAsideViewComponent = comp;
       if(this.$store.getters.isAsideViewOpen() && this.currentAsideViewComponent == comp){
         this.$store.commit('setAsideViewState', false);
       }
       else{
         this.$store.commit('setAsideViewState', true);
       }
+      this.currentAsideViewComponent = comp;
     }
   },
   created(){
