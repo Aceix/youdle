@@ -52,7 +52,7 @@ let webConfig = {
           }
         },
         generator: {
-          filename: 'imgs/[name][ext]'
+          filename: 'imgs/[name].[contenthash][ext]'
         }
       },
       {
@@ -64,7 +64,7 @@ let webConfig = {
           }
         },
         generator: {
-          filename: 'fonts/[name][ext]'
+          filename: 'fonts/[name].[contenthash][ext]'
         }
       }
     ]

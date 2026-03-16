@@ -68,14 +68,14 @@ let rendererConfig = {
           }
         },
         generator: {
-          filename: 'imgs/[name]--[hash][ext]'
+          filename: 'imgs/[name]--[contenthash][ext]'
         }
       },
       {
         test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
         type: 'asset/resource',
         generator: {
-          filename: 'media/[name]--[hash][ext]'
+          filename: 'media/[name]--[contenthash][ext]'
         }
       },
       {
@@ -87,7 +87,7 @@ let rendererConfig = {
           }
         },
         generator: {
-          filename: 'fonts/[name]--[hash][ext]'
+          filename: 'fonts/[name]--[contenthash][ext]'
         }
       }
     ]
