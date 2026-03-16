@@ -83,7 +83,11 @@ function createWindow() {
     minWidth: 1000,
     width: 1000,
     useContentSize: true,
-    icon: path.join(__dirname, '..', '..', 'static', 'youdle-logo.png')
+    icon: path.join(__dirname, '..', '..', 'static', 'youdle-logo.png'),
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false
+    }
   });
 
   mainWindow.loadURL(winURL);
@@ -197,10 +201,9 @@ ipcMain.on('change-downloads-directory', evt => {
     properties: ['openDirectory'],
     defaultPath: appConfig.downloadsDirectory,
     title: 'Select new downloads directory'
-  }, dirPaths => {
-    if(dirPaths){
-      // console.log(dirPaths[0]);
-      evt.sender.send('change-downloads-directory-path', dirPaths[0]);
+  }).then(result => {
+    if (!result.canceled && result.filePaths && result.filePaths.length > 0) {
+      evt.sender.send('change-downloads-directory-path', result.filePaths[0]);
     }
   });
 });
