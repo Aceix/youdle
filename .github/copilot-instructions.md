@@ -6,11 +6,12 @@
 
 ## Tech Stack
 
-- **Electron** (`^11.5.0`) — desktop shell; entry point is `src/main/index.js`
-- **Vue.js 2** (`^2.5.16`) with **Vuex** (`^2.3.1`) for state management and **Vue Router** (`^2.5.3`) for client-side routing
+- **Node.js** `>=20` (see `.nvmrc`) — runtime requirement
+- **Electron** (`^41.0.2`) — desktop shell; entry point is `src/main/index.js`
+- **Vue.js 2** (`^2.7.16`) with **Vuex** (`^3.6.2`) for state management and **Vue Router** (`^3.6.5`) for client-side routing
 - **shelljs** (`^0.8.5`) — used in the main process to invoke `youtube-dl` shell commands
-- **Webpack 3** with the [electron-vue](https://github.com/SimulatedGREG/electron-vue) scaffolding (`node .electron-vue/build.js`)
-- **Babel** (`babel-preset-env`, `babel-preset-stage-0`) for ES2015+ transpilation
+- **Webpack 5** with the [electron-vue](https://github.com/SimulatedGREG/electron-vue) scaffolding (`node .electron-vue/build.js`) and `webpack-cli`
+- **Babel 7** (`@babel/core`, `@babel/preset-env`, `@babel/plugin-transform-runtime`) for ES2015+ transpilation
 
 ## Project Structure
 
