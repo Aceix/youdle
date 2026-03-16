@@ -5,9 +5,8 @@ process.env.NODE_ENV = 'production'
 const { say } = require('cfonts')
 const chalk = require('chalk')
 const del = require('del')
-const packager = require('electron-packager')
+const { packager } = require('@electron/packager')
 const webpack = require('webpack')
-const Multispinner = require('multispinner')
 
 const buildConfig = require('./build.config')
 const mainConfig = require('./webpack.main.config')
@@ -34,36 +33,32 @@ function build () {
 
   del.sync(['dist/electron/*', '!.gitkeep'])
 
-  const tasks = ['main', 'renderer']
-  const m = new Multispinner(tasks, {
-    preText: 'building',
-    postText: 'process'
-  })
-
   let results = ''
+  let completed = 0
+  const total = 2
 
-  m.on('success', () => {
-    process.stdout.write('\x1B[2J\x1B[0f')
-    console.log(`\n\n${results}`)
-    console.log(`${okayLog}take it away ${chalk.yellow('`electron-packager`')}\n`)
-    bundleApp()
-  })
+  function onSuccess (label, result) {
+    results += result + '\n\n'
+    completed++
+    if (completed === total) {
+      process.stdout.write('\x1B[2J\x1B[0f')
+      console.log(`\n\n${results}`)
+      console.log(`${okayLog}take it away ${chalk.yellow('`electron-packager`')}\n`)
+      bundleApp()
+    }
+  }
 
   pack(mainConfig).then(result => {
-    results += result + '\n\n'
-    m.success('main')
+    onSuccess('main', result)
   }).catch(err => {
-    m.error('main')
     console.log(`\n  ${errorLog}failed to build main process`)
     console.error(`\n${err}\n`)
     process.exit(1)
   })
 
   pack(rendererConfig).then(result => {
-    results += result + '\n\n'
-    m.success('renderer')
+    onSuccess('renderer', result)
   }).catch(err => {
-    m.error('renderer')
     console.log(`\n  ${errorLog}failed to build renderer process`)
     console.error(`\n${err}\n`)
     process.exit(1)
@@ -98,13 +93,11 @@ function pack (config) {
 }
 
 function bundleApp () {
-  packager(buildConfig, (err, appPaths) => {
-    if (err) {
-      console.log(`\n${errorLog}${chalk.yellow('`electron-packager`')} says...\n`)
-      console.log(err + '\n')
-    } else {
-      console.log(`\n${doneLog}\n`)
-    }
+  packager(buildConfig).then(appPaths => {
+    console.log(`\n${doneLog}\n`)
+  }).catch(err => {
+    console.log(`\n${errorLog}${chalk.yellow('`electron-packager`')} says...\n`)
+    console.log(err + '\n')
   })
 }
 
