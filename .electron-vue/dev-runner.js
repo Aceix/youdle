@@ -43,37 +43,30 @@ function startRenderer () {
     rendererConfig.entry.renderer = [path.join(__dirname, 'dev-client')].concat(rendererConfig.entry.renderer)
 
     const compiler = webpack(rendererConfig)
-    hotMiddleware = webpackHotMiddleware(compiler, { 
-      log: false, 
-      heartbeat: 2500 
+    hotMiddleware = webpackHotMiddleware(compiler, {
+      log: false,
+      heartbeat: 2500
     })
 
-    compiler.plugin('compilation', compilation => {
-      compilation.plugin('html-webpack-plugin-after-emit', (data, cb) => {
-        hotMiddleware.publish({ action: 'reload' })
-        cb()
-      })
-    })
-
-    compiler.plugin('done', stats => {
+    compiler.hooks.done.tap('done', stats => {
       logStats('Renderer', stats)
     })
 
-    const server = new WebpackDevServer(
-      compiler,
-      {
-        contentBase: path.join(__dirname, '../'),
-        quiet: true,
-        before (app, ctx) {
-          app.use(hotMiddleware)
-          ctx.middleware.waitUntilValid(() => {
-            resolve()
-          })
-        }
+    const server = new WebpackDevServer({
+      static: {
+        directory: path.join(__dirname, '../')
+      },
+      hot: false,
+      client: false,
+      setupMiddlewares (middlewares, devServer) {
+        devServer.app.use(hotMiddleware)
+        return middlewares
       }
-    )
+    }, compiler)
 
-    server.listen(9080)
+    server.start(9080).then(() => {
+      resolve()
+    }).catch(reject)
   })
 }
 
@@ -83,10 +76,9 @@ function startMain () {
 
     const compiler = webpack(mainConfig)
 
-    compiler.plugin('watch-run', (compilation, done) => {
+    compiler.hooks.watchRun.tap('watch-run', () => {
       logStats('Main', chalk.white.bold('compiling...'))
       hotMiddleware.publish({ action: 'compiling' })
-      done()
     })
 
     compiler.watch({}, (err, stats) => {
